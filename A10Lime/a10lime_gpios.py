@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
-# 2014 by kantal59
+# 2014-08-03 by kantal59
 # a10lime_gpios module
 # License: GPL
 
@@ -28,11 +28,11 @@ def get_gpio_num( namestr):
 
 	for gnum, gname in enumerate( _A10LIME_GPIOS):
 		
-			if gname == 0:	return( None)
+			if gname == 0:	continue
 			if gname == namestr:	return( gnum)
 			p= gname.partition('_')
 			if namestr == p[0]	or	namestr == p[2]:	return( gnum)
-			return( None)
+	return( None)
 
 
 
