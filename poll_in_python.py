@@ -1,14 +1,33 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
-# 2014 by kantal59
-# License: GPL
+# poll_in_python.py
+# Copyright (C) 2014 Antal Koós
+# License: The MIT License (MIT); see the LICENSE.txt file
+# Build: 2014-08-11
 
-'''
- Example for polling interrupt enabled pin in input mode.
- The stdin will be polled, too. Entering 'quit' will stop the program.
-'''
+"""
+Example for polling interrupt enabled pin in input mode.
+The stdin will be polled, too. Entering 'quit' will stop the program.
+ 
+In brief without error checking and decoration:
+ 
+board.export_gpio( gnum)
+board.direct_gpio_in( gnum)
+board.edge_gpio( gnum, 'both')
+rtcd, fgpio= board.hold_gpio( gnum)
+po= select.poll()
+po.register( fgpio.fileno(), select.POLLPRI | select.POLLERR)
+while True:
+	events= po.poll( 5000)
+	for fd, ev in events:
+		if fd == fgpio.fileno():
+			fgpio.seek(0)
+			value= fgpio.read()	
+			print( value)	
 
-import a10lime_gpios as lime
+"""
+
+import a10lime_gpios as board
 import sys, select, errno, os
 
 
@@ -17,6 +36,8 @@ def perr( msg,errn):
 	
 
 #----------- GET THE GPIO NUMBER
+print("\n GPIO data version: {},  gpioutils: {}".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
+
 if len(sys.argv) !=2:
 	print(" Missing command line parameter: gpio_number");    exit(1)
 
@@ -27,7 +48,7 @@ except:
 
 
 #----------- GET THE GPIO NAME
-gname= lime.get_gpio_name( gnum );		
+gname= board.get_gpio_name( gnum )	
 if not gname:	
 	print(" Invalid gpio number");    exit(3)
 
@@ -35,7 +56,7 @@ print(" GPIO: {0} [{1}]".format(gnum,gname) )
 
 
 #----------- EXPORT THE GPIO
-rtcd, err= lime.export_gpio( gnum)		
+rtcd, err= board.export_gpio( gnum)		
 if not rtcd:		
 	if err == errno.EBUSY:
 		perr(" GPIO is already exported", errno.EBUSY)
@@ -44,19 +65,19 @@ if not rtcd:
 
 
 #----------- SET GPIO DIRECTION
-rtcd, err= lime.direct_gpio_in( gnum);	
+rtcd, err= board.direct_gpio_in( gnum)
 if not rtcd:	 
 	perr( ' Direction: ', err );		 exit(5)
 
 	
 #----------- SET GPIO EDGE
-rtcd, err= lime.edge_gpio( gnum, "both"); 	
+rtcd, err= board.edge_gpio( gnum, "both") 	
 if not rtcd:	 
 	perr( ' Edge: ', err );		 exit(6)
 
 
 #----------- OPEN THE GPIO, GET THE FILE DESCRIPTOR
-rtcd, value= lime.hold_gpio( gnum)
+rtcd, value= board.hold_gpio( gnum)
 if not rtcd:	 
 	perr( ' Open: ', value ); 	 exit(7)
 fgpio= value

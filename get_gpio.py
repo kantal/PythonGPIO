@@ -1,42 +1,54 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
-# 2014 by kantal59
-# License: GPL
+# get_gpio.py
+# Copyright (C) 2014 Antal Koós
+# License: The MIT License (MIT); see the LICENSE.txt file
+# Build: 2014-08-11
 
-import a10lime_gpios as lime
+import a10lime_gpios as board
 import sys, errno, os
 
-'''
-# in brief:
-lime.export_gpio( gnum)
-lime.direct_gpio_in( gnum)
-rtcd, value = lime.get_gpio( gnum)
-print(value)
-'''
+"""
+# Example for getting GPIO value
+# In brief without error checking and decoration:
 
+board.export_gpio( gnum)
+board.direct_gpio_in( gnum)
+rtcd, value = board.get_gpio( gnum)
+print(value)
+"""
+
+#---------- UTILITY TO PRINT ERROR MSG
 def perr( msg,errn):
 	print( msg+ ': '+ os.strerror( errn) )
-	
 
-#-----------  GET THE GPIO NUMBER
-if len(sys.argv) !=2:
-	print(" Missing command line parameter: gpio_number");   exit(1)
-try:
+
+#-----------  PRINT VERSION, CHECK THE EXISTENCE OF THE COMMAND LINE PARAMETER
+print("\n GPIO data version: {},  gpioutils: {}".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
+
+if len(sys.argv) !=2:	
+	print(" Missing command line parameter: gpio_number or gpio_name");  exit(1)
+
+#-----------  GET THE GPIO NAME or NUMBER
+gnum,gname = None,None
+
+try:	
 	gnum= int(sys.argv[1])
 except:
-	print(" Invalid integer string");   exit(2)
+	gname= sys.argv[1]
+	gnum=  board.get_gpio_num( gname)	
+else:	
+	gname= board.get_gpio_name( gnum )
+	
 
-
-#-----------  GET THE GPIO NAME
-gname= lime.get_gpio_name( gnum );		
-if not gname:	
-	print(" Invalid gpio number");   exit(3)
+if not gname or not gnum:	
+	print(" Invalid gpio number or name");   exit(2)
 
 print(" GPIO: {0} [{1}]".format(gnum,gname) )	
 
 
 #-----------  EXPORT THE GPIO
-rtcd, err= lime.export_gpio( gnum)		
+rtcd, err= board.export_gpio( gnum)		
 if not rtcd:		
 	if err == errno.EBUSY:
 		perr(" GPIO is already exported", errno.EBUSY)
@@ -45,13 +57,13 @@ if not rtcd:
 
 
 #-----------  SET GPIO DIRECTION
-rtcd, err= lime.direct_gpio_in( gnum)
+rtcd, err= board.direct_gpio_in( gnum)
 if not rtcd:	 
 	perr( ' Direction: ', err );		exit(5)
 
 	
 #-----------  GET THE VALUE
-rtcd, value = lime.get_gpio( gnum)
+rtcd, value = board.get_gpio( gnum)
 if not rtcd:
 	perr( " Get gpio: ", value);		exit(6)
 	

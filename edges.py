@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 #-*- coding:utf-8 -*-
-# 2014-07-18 by kantal59
-# License: LGPL
+# edges.py
+# Copyright (C) 2014 Antal Koós
+# License: The MIT License (MIT); see the LICENSE.txt file
+# Build: 2014-08-11
 
-import a10lime_gpios as lime
+""" It lists the GPIO numbers which can be interrupt sources, it doesn't handle the hardware, reads only from the GPIO the data file. """
 
-print(" Edge enabled GPIOs on A10 Lime:")
-for gnum in lime._EDGE_ENABLED:
-	print("  {} [{}]".format(gnum, lime.get_gpio_name(gnum)))
+import a10lime_gpios as board
 
+print("\n GPIO data version: {},  gpioutils: {}".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
+print(" Edge enabled GPIOs({0}):".format(len(board.EDGE_ENABLED)) )
+
+for gnum in sorted(board.EDGE_ENABLED):
+	print("  {} [{}]".format(gnum, board.get_gpio_name(gnum)))
+	
+
+#print( board.EDGE_ENABLED, board.GPIOS)
 
 
