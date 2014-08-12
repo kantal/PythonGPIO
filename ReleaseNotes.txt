@@ -1,0 +1,16 @@
+
+Release Notes for PythonGPIO v1.1
+---------------------------------
+
+ *	The hw-specific data and the API functions are separated.
+	a10lime_gpios.py contains the data, gpioutils.py contains the API.
+	Only the a10lime_gpios.py must be imported into a Python code.
+	It's easy to clone the data file for other boards.
+
+ *	More docstrings added. Try:	
+ 		pydoc gpioutils
+ 		pydoc a10lime_gpios	
+		
+ *	License is changed to the MIT License (MIT); see the LICENSE.txt file.
+ 
+	 	
