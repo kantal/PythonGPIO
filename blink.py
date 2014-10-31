@@ -3,33 +3,35 @@
 # blink.py
 # Copyright (C) 2014 Antal Koós
 # License: The MIT License (MIT); see the LICENSE.txt file
-# Build: 2014-08-11
+# Build: 2014-10-29
 
 """ Example for LED blinking """
 
-import a10lime_gpios as board
+import a20micro_gpios as hw
+#import a10lime_gpios as hw
 import sys
 import time
 
-print("\n GPIO data version: {},  gpioutils: {}".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
+#board= hw.BOARD()
+#board= hw.BOARD( "/boot/script.fex" )
+board= hw.BOARD( "script_test.fex")
 
-#gnum= board.get_gpio_num("gpio20_ph2")
-#gnum= board.get_gpio_num("gpio20")
-#gnum= board.get_gpio_num("ph2")
-#gnum=20
-gnum= board.LED_GPIONUM
+print("\n GPIO data version: {},  gpioutils: {}\n".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
 
-tsleep, period = 0.5, 10
-print("Blinking the LED[{}] for {} times ...".format( gnum,period) )
 
-board.export_gpio( gnum)
-board.direct_gpio_out( gnum)
-
-for p in range( period):
-	board.set_gpio_1( gnum)	# turn on the LED
-	time.sleep( tsleep)
-	board.set_gpio_0( gnum)	# turn off
-	time.sleep( tsleep)
+if board.LED_NAME:
+	led= board.GPIO( board.LED_NAME )
+	#led= GPIO( "ph2")
 	
-	
+	tsleep, period = 0.5, 10
+	print(" Blinking the LED[{}/{}] for {} times ...\n".format( led.num(),led.name(),period) )
+
+	led.export()
+	led.direct_out()
+
+	for p in range( period):
+		led.setv_1()	# turn on the LED
+		time.sleep( tsleep)
+		led.setv_0()	# turn off
+		time.sleep( tsleep)
 	

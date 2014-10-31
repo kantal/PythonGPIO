@@ -1,0 +1,155 @@
+Help on module gpioutils:
+
+NAME
+    gpioutils
+
+FILE
+    gpioutils.py
+
+DESCRIPTION
+    The 'gpioutils' module contains common GPIO related functions, which are not hardware specific.
+    The functions use the Linux sysfs.
+    
+    A hardware specific module, e.g.: a10lime_gpios.py, contains hardware specific GPIO data.
+    Only a hardware specific module must be imported into the user program, and not this 'gpioutils'
+    module.
+    You must first instantiate a single BOARD class then one or more GPIO classes.
+    When you instantiate the BOARD class, you can specify a fex file from which the GPIO data will be read.
+    If a fex file is not specified, the GPIO data contained by the hardware specific module will be used.
+    
+    If the instantiation of the BOARD or the GPIO class failed, then a GpioUtilsError exception is thrown.
+    See the examples, too!
+    
+    Variables:
+            GPIOS: tuples of GPIO number and name;
+                   GPIO name can consist of two parts connected by underscore, e.g.: gpio20_ph2 ;
+            INTSRC_GNAMES: GPIO names, which can be interrupt sources, the order doesn't matter.
+            INTSRC_GNUMS: contains GPIO numbers, which can be interrupt sources, the order doesn't matter.
+
+CLASSES
+    exceptions.Exception(exceptions.BaseException)
+        GpioUtilsError
+    GPIO
+    
+    class GPIO
+     |  Methods defined here:
+     |  
+     |  __init__(self, gpiopar)
+     |      Create a GPIO object 
+     |      
+     |      Input: a GPIO number or name. A name can consist of two parts connected with '_'.
+     |      It is acceptable if you only specify one of them.
+     |      On error it throws an exception.
+     |  
+     |  direct_in(self)
+     |      Set GPIO direction
+     |      
+     |      It sets the GPIO to input mode.
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  direct_out(self)
+     |      Set GPIO direction
+     |      
+     |      It sets the GPIO to output mode.
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  edge(self, level)
+     |      Enble the GPIO as interrupt source
+     |      
+     |      Input: edge - 'rising', 'falling', 'both', 'none'   case insensitive
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |      It returns (False,EINVAL) if the 'edge' is invalid or the GPIO can't be an interrupt source.
+     |  
+     |  export(self)
+     |      Export the GPIO
+     |      
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |      It returns (False,EBUSY) if the GPIO is already exported.
+     |  
+     |  fdsc(self)
+     |      Returns the open file descriptor of the sysfs file or -1
+     |  
+     |  get(self)
+     |      Read the GPIO value
+     |      
+     |      Return a tuple: (True,value) on success else (False, errno) .
+     |  
+     |  hold(self)
+     |      Open and hold a GPIO on the sysfs
+     |      
+     |      Return a tuple: (True, file object) on success else (False, errno). 
+     |      The file descriptor of the returned file object can be used in the poll() function ( fgpio.fileno() ).
+     |      You must not close the file object directly, use the release() method instead.
+     |  
+     |  name(self)
+     |      Returns the GPIO name
+     |  
+     |  num(self)
+     |      Returns the GPIO number
+     |  
+     |  release(self)
+     |      Close the open file descriptor
+     |  
+     |  setv(self, value)
+     |      Set the GPIO to 1/0
+     |      
+     |      It sets the GPIO to 1 if the 'value' is True else sets to 0.
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  setv_0(self)
+     |      Set the GPIO to 0
+     |      
+     |      It sets the GPIO to 0.
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  setv_1(self)
+     |      Set the GPIO to 1
+     |      
+     |      It sets the GPIO to 1.
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  sysfsname(self)
+     |      Returns the GPIO sysfs name
+     |  
+     |  unexport(self)
+     |      Unexport the GPIO
+     |      
+     |      Return a tuple: (True,True) on success else (False, errno) .
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  EDGE_TYPES = ['rising', 'falling', 'both', 'none']
+     |  
+     |  GPIOS = []
+     |  
+     |  GPIO_UTILS_VERSION = '2.0'
+     |  
+     |  INTSRC_GNAMES = []
+     |  
+     |  INTSRC_GNUMS = []
+     |  
+     |  SYSFS_GPIO_DIR = '/sys/class/gpio'
+    
+    class GpioUtilsError(exceptions.Exception)
+     |  Method resolution order:
+     |      GpioUtilsError
+     |      exceptions.Exception
+     |      exceptions.BaseException
+     |      __builtin__.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __init__(self, value)
+     |  
+     |  __str__(self)
+     
+FUNCTIONS
+    extract_gpios(fex_file)
+        Extract the sysfs gpio name from a fex file
+        
+        Input: the fex file with full path
+        Return a tuple: (True, list_of_gpio_names) on success else (False, description_of_the error)
+        The resulting 'list_of_gpio_names' can be put into a hardware specific file.
+
+

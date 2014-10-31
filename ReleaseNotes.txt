@@ -1,4 +1,23 @@
 
+Release Notes for PythonGPIO v2.0
+---------------------------------
+
+ *	The 2.0 version and the previous 1.1 version are COMPLETELY INCOMPATIBLE !
+ 
+ *	Completely rewritten code. Data structure changed. Classes, exceptions are used.
+ 
+ *	GPIO data can be read from a fex file.
+ 
+ *	Files added: 
+ 		a20micro_gpios.py
+ 		generic_gpios.py
+ 		gpioclass_example.py
+ 		exceptions.py
+ 		fextract.py
+ 		Guide.txt
+ 		script_test.fex
+
+
 Release Notes for PythonGPIO v1.1
 ---------------------------------
 

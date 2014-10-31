@@ -3,18 +3,20 @@
 # poll_in_python.py
 # Copyright (C) 2014 Antal Koós
 # License: The MIT License (MIT); see the LICENSE.txt file
-# Build: 2014-08-11
+# Build: 2014-10-30
 
 """
 Example for polling interrupt enabled pin in input mode.
 The stdin will be polled, too. Entering 'quit' will stop the program.
  
 In brief without error checking and decoration:
- 
-board.export_gpio( gnum)
-board.direct_gpio_in( gnum)
-board.edge_gpio( gnum, 'both')
-rtcd, fgpio= board.hold_gpio( gnum)
+
+gpio= board.GPIO( gpio_num_or_name) 
+gpio.export()
+gpio.direct_in()
+gpio.edge("both")
+rtcd, value= gpio.hold()
+fgpio= value
 po= select.poll()
 po.register( fgpio.fileno(), select.POLLPRI | select.POLLERR)
 while True:
@@ -22,74 +24,87 @@ while True:
 	for fd, ev in events:
 		if fd == fgpio.fileno():
 			fgpio.seek(0)
-			value= fgpio.read()	
-			print( value)	
+			val= fgpio.read()	
+			print( val)	
 
 """
 
-import a10lime_gpios as board
+import a20micro_gpios as hw
+#import a10lime_gpios as hw
 import sys, select, errno, os
 
-
+#---------- UTILITY TO PRINT ERROR MSG
 def perr( msg,errn):
 	print( msg+ ': '+ os.strerror( errn) )
 	
 
-#----------- GET THE GPIO NUMBER
+# ---------- CREATE BOARD OBJECT
+board= hw.BOARD()
+
+#-----------  PRINT VERSION, CHECK THE EXISTENCE OF THE COMMAND LINE PARAMETER
+
 print("\n GPIO data version: {},  gpioutils: {}".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
 
 if len(sys.argv) !=2:
-	print(" Missing command line parameter: gpio_number");    exit(1)
+	print(" Missing command line parameter: gpio_number or gpio_name");    exit(1)
+
+#-----------  CREATE THE GPIO OBJECT
+
+par=None
+try:
+	par=int( sys.argv[1])	# gpio number ?
+except:
+	par= sys.argv[1]		# gpio name
 
 try:
-	gnum= int(sys.argv[1])
-except:
-	print(" Invalid integer string");    exit(2)
+	gpio= board.GPIO( par)
+except:	
+	print(" Invalid gpio number or name");   exit(2)
+	
+	
+print(" GPIO: {0} [{1}]".format( gpio.name(),gpio.num() ) )	
 
+#-----------  EXPORT THE GPIO
 
-#----------- GET THE GPIO NAME
-gname= board.get_gpio_name( gnum )	
-if not gname:	
-	print(" Invalid gpio number");    exit(3)
-
-print(" GPIO: {0} [{1}]".format(gnum,gname) )	
-
-
-#----------- EXPORT THE GPIO
-rtcd, err= board.export_gpio( gnum)		
+rtcd, err= gpio.export()		
 if not rtcd:		
 	if err == errno.EBUSY:
 		perr(" GPIO is already exported", errno.EBUSY)
 	else:
-		perr( ' Export', err );		 exit(4)
+		perr( ' Export', err );		exit(3)
 
 
-#----------- SET GPIO DIRECTION
-rtcd, err= board.direct_gpio_in( gnum)
+#-----------  SET GPIO DIRECTION
+
+rtcd, err= gpio.direct_in()
 if not rtcd:	 
-	perr( ' Direction: ', err );		 exit(5)
-
+	perr( ' Direction: ', err );		exit(4)
+	
 	
 #----------- SET GPIO EDGE
-rtcd, err= board.edge_gpio( gnum, "both") 	
+
+rtcd, err= gpio.edge("both") 	
 if not rtcd:	 
-	perr( ' Edge: ', err );		 exit(6)
+	perr( ' Edge: ', err );		 exit(5)
 
 
 #----------- OPEN THE GPIO, GET THE FILE DESCRIPTOR
-rtcd, value= board.hold_gpio( gnum)
+
+rtcd, value= gpio.hold()
 if not rtcd:	 
-	perr( ' Open: ', value ); 	 exit(7)
+	perr( ' Open: ', value ); 	 exit(6)
+
 fgpio= value
 
-
 #----------- SET POLL
+
 po= select.poll()
 po.register( fgpio.fileno(), select.POLLPRI | select.POLLERR)
 po.register( 0, select.POLLIN)	# stdin
 
 	
 #----------- POLLING
+
 while True:
 	events= po.poll( 5000)	# msecs
 	
@@ -104,14 +119,14 @@ while True:
 			s= input()
 			print( " input from stdin: {0}".format( s) )
 			if s == 'quit':	
-				fgpio.close()
+				gpio.release()
 				exit(0)
 			continue
 			
 		if fd == fgpio.fileno():
 			fgpio.seek(0)
-			v= fgpio.read()	# reading '1\n' or '0\n'
-			print( " gpio changed: {0}".format( v ) )	
+			val= fgpio.read()	# reading '1\n' or '0\n'
+			print( " gpio changed: {0}".format( val ) )	
 			continue
 	
 	
