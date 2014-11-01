@@ -12,9 +12,9 @@ import a20micro_gpios as hw
 import sys
 import time
 
-#board= hw.BOARD()
+board= hw.BOARD()
 #board= hw.BOARD( "/boot/script.fex" )
-board= hw.BOARD( "script_test.fex")
+#board= hw.BOARD( "script_test.fex")
 
 print("\n GPIO data version: {},  gpioutils: {}\n".format( board.GPIO_DATA_VERSION, board.GPIO_UTILS_VERSION) )
 
