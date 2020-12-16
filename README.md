@@ -1,5 +1,7 @@
-##PythonGPIO
-###Python GPIO modules for OLIMEX boards
+**A little outdated, I should revise it.** \
+
+## PythonGPIO
+### Python GPIO modules for OLIMEX boards
 
 WARNING: This 2.0 version and the previous 1.1 version are COMPLETELY INCOMPATIBLE !
 
@@ -22,13 +24,13 @@ FILES:
 	* blink.py
 	* get_gpio.py
 	* poll_in_python.py
-	* edges.py	
+	* edges.py
 - documentation:
 	* README.md
-	* ReleaseNotes.txt	
+	* ReleaseNotes.txt
 	* Guide.txt
 - others:
-	* script_test.fex	
+	* script_test.fex
 
 
 License: The MIT License (MIT); see the LICENSE.txt file
