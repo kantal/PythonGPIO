@@ -1,4 +1,4 @@
-**A little outdated, I should revise it.** \
+**COMPLETELY  OUTDATED!**
 
 ## PythonGPIO
 ### Python GPIO modules for OLIMEX boards
